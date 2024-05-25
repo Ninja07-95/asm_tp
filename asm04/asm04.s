@@ -3,8 +3,8 @@ section .text
     global _start
 
 _start:
-    mov rax, [rsp+8] ; argc (nombre d'arguments, incluant le nom du programme)
-    cmp rax, 2 ; Nous attendons au moins 1 argument + le nom du programme
+    mov rdi, [rsp+8] ; argc (nombre d'arguments, incluant le nom du programme)
+    cmp rdi, 2 ; Nous attendons au moins 1 argument + le nom du programme
     jl .exitFailure ; Sauter à la fin avec un code de sortie 1 si moins de 2 arguments
 
     mov rsi, [rsp+16] ; argv[1]
@@ -36,6 +36,4 @@ convertToInt:
         jmp .loop
     .done:
         ret
-
-
 
