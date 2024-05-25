@@ -1,39 +1,50 @@
 section .data
+    prompt db "Entrez un nombre : ", 0
+    newline db 10
+
 section .text
     global _start
 
 _start:
-    mov rdi, [rsp+8] ; argc (nombre d'arguments, incluant le nom du programme)
-    cmp rdi, 2 ; Nous attendons au moins 1 argument + le nom du programme
-    jl .exitFailure ; Sauter à la fin avec un code de sortie 1 si moins de 2 arguments
+    ; Afficher le prompt
+    mov rsi, prompt
+    call printString
 
-    mov rsi, [rsp+16] ; argv[1]
-    call convertToInt ; Convertir l'argument en entier
+    ; Lire l'entrée de l'utilisateur
+    call readInt
 
-    test rax, 1 ; Teste le bit le plus bas de RAX
-    jnz .exitFailure ; Si impair (bit le plus bas est 1), sauter à exitFailure
+    ; Tester si le nombre est impair
+    test rax, 1
+    jnz .exitFailure
 
-    xor edi, edi ; Code de sortie 0
+    ; Sortie avec code de succès
+    xor edi, edi
     jmp .exit
 
 .exitFailure:
-    mov edi, 1 ; Code de sortie 1
+    ; Sortie avec code d'échec
+    mov edi, 1
 
 .exit:
-    mov eax, 60 ; syscall: exit
+    ; Appel système pour terminer le programme
+    mov eax, 60
     syscall
 
-convertToInt:
-    xor rax, rax ; Efface RAX pour stocker le résultat
-    .loop:
-        movzx rcx, byte [rsi] ; Lire le caractère actuel
-        test rcx, rcx ; Vérifie si le caractère est NULL
-        jz .done ; Fin de la chaîne
-        sub rcx, '0' ; Convertir de ASCII à entier
-        imul rax, rax, 10 ; RAX = RAX * 10
-        add rax, rcx ; RAX = RAX + RCX (ajouter la valeur du chiffre actuel)
-        inc rsi ; Passer au prochain caractère
-        jmp .loop
-    .done:
-        ret
+printString:
+    ; Afficher une chaîne de caractères pointée par RSI
+    mov eax, 1
+    mov edi, 1
+    mov edx, 0xffffffff
+    syscall
+    ret
+
+readInt:
+    ; Lire un entier de l'entrée standard et le stocker dans RAX
+    xor rax, rax
+    xor rdi, rdi
+    lea rsi, [rsp - 8] ; Pointeur vers l'emplacement de stockage temporaire
+    mov rdx, 20 ; Longueur maximale de l'entrée
+    syscall
+    mov rax, [rsp - 8] ; Convertir la chaîne en entier
+    ret
 
