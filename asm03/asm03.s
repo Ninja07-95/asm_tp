@@ -3,12 +3,14 @@ section .data
     messageLength equ $-successMessage ; Calcule la longueur du message
     expectedArg db '42', 0 ; L'argument attendu est "42" suivi d'un caractère nul
 
+section .bss
+
 section .text
     global _start
 
 _start:
-    mov rax, [rsp+8] ; argc (nombre d'arguments, incluant le nom du programme)
-    cmp rax, 2 ; Nous attendons au moins 1 argument + le nom du programme
+    mov rax, [rsp] ; argc (nombre d'arguments, incluant le nom du programme)
+    cmp rax, 2 ; Vérifier si nous avons au moins 1 argument + le nom du programme
     jl .exitFailure ; Sauter à la fin avec un code de sortie 1 si moins de 2 arguments
 
     mov rsi, [rsp+16] ; argv[1]
@@ -52,3 +54,4 @@ compareStrings:
     .notequal:
         mov al, 1 ; Mettre 1 dans AL pour indiquer une différence
         ret
+

@@ -5,19 +5,17 @@ section .text
 _start:
     mov rax, [rsp+8] ; argc (nombre d'arguments, incluant le nom du programme)
     cmp rax, 2 ; Nous attendons au moins 1 argument + le nom du programme
-    jl .exitFailure ; Sauter à la fin avec un code de sortie 1 si moins de 2 arguments
+    jl .exitSuccess ; Sauter à la fin avec un code de sortie 0 si moins de 2 arguments
 
     mov rsi, [rsp+16] ; argv[1]
     call convertToInt ; Convertir l'argument en entier
 
     test rax, 1 ; Teste le bit le plus bas de RAX
-    jnz .exitFailure ; Si impair (bit le plus bas est 1), sauter à exitFailure
+    jnz .exitSuccess ; Si impair (bit le plus bas est 1), sauter à exitSuccess
 
+.exitSuccess:
     xor edi, edi ; Code de sortie 0
     jmp .exit
-
-.exitFailure:
-    mov edi, 1 ; Code de sortie 1
 
 .exit:
     mov eax, 60 ; syscall: exit
@@ -36,3 +34,4 @@ convertToInt:
         jmp .loop
     .done:
         ret
+
