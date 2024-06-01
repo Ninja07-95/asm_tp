@@ -8,6 +8,7 @@ section .data
     prompt db 'Enter a positive integer: ', 0
     sum_msg db 0AH, 'Sum = ', 0
     newline db 0AH, 0
+    zero_msg db 'Sum = 0', 0AH, 0
     ten dq 10
 
 section .text
@@ -36,9 +37,9 @@ read_input:
     call atoi
     mov [n], eax              ; stocke le résultat dans n
 
-    ; Vérifie si n est positif
+    ; Vérifie si n est positif et non nul
     cmp dword [n], 1
-    jl read_input             ; si n < 1, relire l'entrée
+    jl print_zero             ; si n < 1, afficher 0 et quitter
 
     ; Initialisation de la boucle
     mov ecx, 1                ; i = 1
@@ -79,6 +80,16 @@ end_loop:
     mov rdi, 1
     mov rsi, newline
     mov rdx, 1
+    syscall
+
+    jmp exit
+
+print_zero:
+    ; Affiche "Sum = 0" si l'entrée est non valide ou 0
+    mov rax, 1                ; syscall: write
+    mov rdi, 1                ; file descriptor: stdout
+    mov rsi, zero_msg         ; adresse de la chaîne
+    mov rdx, 8                ; longueur de la chaîne
     syscall
 
 exit:
