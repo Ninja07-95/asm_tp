@@ -37,16 +37,16 @@ read_input:
     mov [n], eax              ; stocke le résultat dans n
 
     ; Vérifie si n est positif
-    cmp dword [n], 0
-    jle read_input            ; si n <= 0, relire l'entrée
+    cmp dword [n], 1
+    jl read_input             ; si n < 1, relire l'entrée
 
     ; Initialisation de la boucle
     mov ecx, 1                ; i = 1
 
 sum_loop:
-    ; Compare i à n
+    ; Compare i à n-1
     cmp ecx, [n]
-    jg end_loop               ; si i > n, finir la boucle
+    jge end_loop              ; si i >= n, finir la boucle
 
     ; Ajoute i à sum
     add dword [sum], ecx
@@ -118,3 +118,4 @@ itoa_loop:
     jnz itoa_loop
     mov rsi, rdi
     ret
+
